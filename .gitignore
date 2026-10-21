@@ -1,0 +1,12 @@
+# pixi env
+.pixi/
+
+# The pinned pedigreegraph R package, the CRAN oracles and their downloads (pixi run r-setup)
+.r-lib/
+
+# Per-run JSON exchanged with Rscript, and downloaded datasets
+.work/
+.cache/
+
+__pycache__/
+.ruff_cache/

@@ -1,0 +1,40 @@
+# CRAN source tarballs for the oracles, in install order (dependencies first).
+# Written by tools/lock_oracles.py; run_oracles.py --install-r refuses a
+# tarball whose sha256 differs. Dependencies on conda-forge come from pixi.toml.
+packages:
+- name: pedmut
+  version: 0.9.1
+  url: https://cran.r-project.org/src/contrib/pedmut_0.9.1.tar.gz
+  sha256: 3400199cadec42ae26f4d30a863134e66814f55d42a68d10eeb8e626bf18dc62
+- name: pedtools
+  version: 2.11.0
+  url: https://cran.r-project.org/src/contrib/pedtools_2.11.0.tar.gz
+  sha256: ed26ee15514a59cdfbb6cf786c5d495b40ea689b303c9070e580c8806970f641
+- name: ribd
+  version: 1.7.2
+  url: https://cran.r-project.org/src/contrib/ribd_1.7.2.tar.gz
+  sha256: b024d359c8202bbcff6de5f5ad3c12d5975c76608b9010e08006a197bb6450c3
+- name: verbalisr
+  version: 0.7.2
+  url: https://cran.r-project.org/src/contrib/verbalisr_0.7.2.tar.gz
+  sha256: 3864401124e02638a681c9c3c3ea19685d7688d0de573f838b4e9c670da60c17
+- name: nadiv
+  version: 2.18.0
+  url: https://cran.r-project.org/src/contrib/nadiv_2.18.0.tar.gz
+  sha256: e6748d3527b8682c68d74e2657a696361aae12a1e6b681ed4c87b05891e31059
+- name: pedigreeTools
+  version: '0.3'
+  url: https://cran.r-project.org/src/contrib/pedigreeTools_0.3.tar.gz
+  sha256: 84f181ffa95cee5a48d1fa2e04ce3299839fb9163afeb315e9216b997fbc750e
+- name: AGHmatrix
+  version: 3.0.3
+  url: https://cran.r-project.org/src/contrib/AGHmatrix_3.0.3.tar.gz
+  sha256: 8234217ad0b0e679d43516592481d8655512f45695cf92c535511d3b78d77ecd
+- name: purgeR
+  version: 1.8.3
+  url: https://cran.r-project.org/src/contrib/purgeR_1.8.3.tar.gz
+  sha256: 0fa901e40ee66e1ee6469b26a6c7ebc6d453034b4964829a24043a2a8e687700
+- name: visPedigree
+  version: 1.10.1
+  url: https://cran.r-project.org/src/contrib/visPedigree_1.10.1.tar.gz
+  sha256: d95eb97579f8a5bdc82f373c54f016d96588982082e903dea2797acee0364016

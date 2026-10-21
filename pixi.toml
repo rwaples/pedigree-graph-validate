@@ -1,0 +1,61 @@
+# pedigree-graph-validate: checks pedigree-graph against the same methods in
+# other software (oracles), rerun live.
+#
+# Both pedigree-graph bindings are pinned to the v0.13.0 release pair: the PyPI
+# wheel here and the R source tarball in pedigreegraph.pin. The CRAN-only
+# oracles are pinned by sha256 in oracles.lock (tools/lock_oracles.py writes
+# it); r-setup installs both into .r-lib/. The r-* entries below are the
+# oracles and oracle dependencies that conda-forge builds for r-base 4.5.
+# To check a local pedigree-graph checkout instead (do NOT commit):
+#   pedigree-graph = { path = "../pedigree-graph", editable = true }
+# and `PGV_R_TARBALL=/path/to/pedigreegraph_<ver>.tar.gz pixi run harness`
+# with a tarball from that checkout's tools/r_build_tarball.sh.
+[workspace]
+name = "pedigree-graph-validate"
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+requires-pixi = ">=0.82,<0.83"
+
+[dependencies]
+python = "3.14.*"
+ruff = "0.17.*"
+numpy = "*"
+pyyaml = "*"
+r-base = "4.5.*"
+rust = ">=1.85"  # the pedigreegraph R tarball compiles its vendored crates
+c-compiler = "*"
+cxx-compiler = "*"
+fortran-compiler = "*"
+make = "*"
+r-jsonlite = "*"
+# oracles on conda-forge
+r-kinship2 = "*"
+r-genlib = "*"
+# dependencies of the CRAN-only oracles in oracles.lock
+r-matrix = "*"
+r-rcpp = "*"
+r-rcpparmadillo = "*"
+r-rcppprogress = "*"
+"r-data.table" = "*"
+r-dosnow = "*"
+r-foreach = "*"
+r-glue = "*"
+r-igraph = "*"
+r-lattice = "*"
+r-lpsolve = "*"
+r-matrixstats = "*"
+r-progress = "*"
+r-shiny = "*"
+r-slam = "*"
+
+[pypi-dependencies]
+pedigree-graph = "==0.13.0"
+
+[activation.env]
+R_LIBS_USER = "$PIXI_PROJECT_ROOT/.r-lib"
+
+[tasks]
+r-setup = { cmd = "python run_oracles.py --install-r", description = "Install the pinned pedigreegraph tarball and the oracles.lock tarballs into .r-lib/" }
+preflight = { cmd = "python run_oracles.py --preflight", depends-on = ["r-setup"], description = "Check both bindings report the pin and every oracle loads" }
+lock-oracles = { cmd = "python tools/lock_oracles.py", description = "Re-resolve oracles.lock from CRAN (review the diff)" }
+lint = { cmd = "ruff check && ruff format --check", description = "Lint and format check" }
