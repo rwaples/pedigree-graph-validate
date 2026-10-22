@@ -35,7 +35,9 @@ re-resolves `oracles.lock` from CRAN.
    `pedigree-graph = { path = "../pedigree-graph", editable = true }` and run
    `pixi install`.
 2. Build the R tarball in the checkout (`pixi run -e r tools/r_build_tarball.sh`)
-   and run `PGV_R_TARBALL=/path/to/pedigreegraph_<ver>.tar.gz pixi run preflight`.
+   and run `PGV_R_TARBALL=/path/to/pedigreegraph_<ver>.tar.gz pixi run harness`
+   (it installs that tarball first; `pixi run preflight` with the variable set
+   only checks that everything loads).
 
 Neither binding reports its core revision yet, so under the override the
 preflight cannot check that both were built from the same tree.
