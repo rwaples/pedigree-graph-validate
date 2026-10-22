@@ -1,0 +1,277 @@
+# The public pedigrees, copied from pedsum-validate's cases.yaml `datasets:` at 2682fb7
+# and owned here (plan D10). Keys are documented in pedsum-validate's cases.yaml;
+# this repo reads format, object, member, names, columns, missing_parent,
+# sex_map, parent_overrides, reference_column, url / dryad_file and sha256.
+datasets:
+  atlas:
+    url: https://raw.githubusercontent.com/cran/purgeR/5f3c193e7c0f579dec6e8b981f75a0cb8929ba0d/data/atlas.rda
+    sha256: 594eaa3408284e6867a2c06e0153541c91ca0632f8fa20a625f42cb8b040a722
+    object: atlas
+    columns: {id: id, mother: dam, father: sire, sex: sex}
+    missing_parent: ["0"]
+    sex_map: {M: 1, F: 2}
+    reference_column: target
+  dama:
+    url: https://raw.githubusercontent.com/cran/purgeR/5f3c193e7c0f579dec6e8b981f75a0cb8929ba0d/data/dama.rda
+    sha256: ccf683c05432647f0f3ff786708d9928c62725e4cbe6f332e88250d3c904d0d1
+    object: dama
+    columns: {id: id, mother: dam, father: sire, sex: sex}
+    missing_parent: ["0"]
+    sex_map: {M: 1, F: 2}
+    reference_column: target
+  arrui:
+    url: https://raw.githubusercontent.com/cran/purgeR/5f3c193e7c0f579dec6e8b981f75a0cb8929ba0d/data/arrui.rda
+    sha256: be6e27df6d996fc7054ba39fb08a064a1b198266368d4a4a21e3de996fcdd000
+    object: arrui
+    columns: {id: id, mother: dam, father: sire, sex: sex}
+    missing_parent: ["0"]
+    sex_map: {M: 1, F: 2}
+    reference_column: target
+  dorcas:
+    url: https://raw.githubusercontent.com/cran/purgeR/5f3c193e7c0f579dec6e8b981f75a0cb8929ba0d/data/dorcas.rda
+    sha256: b118be0e38cc60824fbce3094a3109548e92543e42ad37e0c01d43b2b3ac6376
+    object: dorcas
+    columns: {id: id, mother: dam, father: sire, sex: sex}
+    missing_parent: ["0"]
+    sex_map: {M: 1, F: 2}
+    reference_column: target
+  darwin:
+    url: https://raw.githubusercontent.com/cran/purgeR/5f3c193e7c0f579dec6e8b981f75a0cb8929ba0d/data/darwin.rda
+    sha256: de51d0775fcce81a37673ddbcbc4d9c03a0be9a36d737a1ea5591762bbf52ff8
+    object: darwin
+    columns: {id: Individual, mother: Mother, father: Father}
+    # The file deliberately mixes missing-parent spellings.
+    missing_parent: ["0", "Unknown", "unknown", "unk", "UNK"]
+  genea140:
+    url: https://raw.githubusercontent.com/cran/GENLIB/84a2a9919feb864f3d30a83131a9efa74d14812e/data/genea140.rda
+    sha256: 4da7a8c66612dca1b810ff55295a08a4d5999a8eeb1c3bd13410c5bf9b3e5b1d
+    object: genea140
+    columns: {id: ind, mother: mother, father: father, sex: sex}
+    missing_parent: ["0"]
+    sex_map: {"1": 1, "2": 2}
+  deep_ped:
+    url: https://raw.githubusercontent.com/cran/visPedigree/a849317f5133e9764cdbc155e3657f4772b46531/data/deep_ped.rda
+    sha256: f0c6c96c05c69043fb86ce7f4706574dcc7a6c8ddc09121946c8dde6934211cb
+    object: deep_ped
+    columns: {id: Ind, mother: Dam, father: Sire, sex: Sex}
+    missing_parent: ["0"]
+    sex_map: {Male: 1, Female: 2}
+  mrode2:
+    url: https://raw.githubusercontent.com/cran/nadiv/87dd7d0f9234668d2cc2cfd9830c282a3f1b35ed/data/Mrode2.rda
+    sha256: 4f89c9839f383df760f7e057058005f698cb0b3e0b843ca41193b003ad9a1e29
+    object: Mrode2
+    columns: {id: id, mother: dam, father: sire}
+    missing_parent: []
+  btped:
+    url: https://raw.githubusercontent.com/cran/MCMCglmm/da5f2903e7ced4166e475ccdfae6d020672986ba/data/BTped.tab.gz
+    sha256: c16874d886b1d26892373b269cdd06b62d42c387f3c6e65d5bc0e7fbd6593ead
+    format: whitespace_table
+    columns: {id: animal, mother: dam, father: sire}
+    missing_parent: []
+
+  red_deer:
+    # Figshare 10.6084/m9.figshare.25053941.v1 (CC BY 4.0), the pedigree of Hewett et al. 2024.
+    # The *_anon columns give a calf, a mother and a sire separate codes (C/M/D prefixes),
+    # so they do not link generations; Code/MumCode/Sire do.
+    url: https://ndownloader.figshare.com/files/44211236
+    sha256: 733b4c6b921f9732f40113f71524fbfd9642e0b80bc4ca50d716f7e67bc7d9d1
+    format: csv
+    columns: {id: Code, mother: MumCode, father: Sire}
+    missing_parent: []
+  # Boichard, Maignel & Verrier 1997, figure 2, as typed in for PyPedal's unit tests.
+  # Columns are animal, sire, dam, generation (pyp_tests.py pedformat 'asdg').
+  boichard2:
+    url: https://downloads.sourceforge.net/project/pypedal/pypedal-2.0.0/2.0.3/PyPedal-2.0.3.tar.gz
+    sha256: c2f66af3f858279f06cb72da11c8620311abca405fc5292bdc782ee12de2362a
+    member: PyPedal-2.0.3/PyPedal/tests/boichard/boichard2.ped
+    format: whitespace_table
+    names: [animal, sire, dam, gen]
+    columns: {id: animal, mother: dam, father: sire}
+    missing_parent: ["0"]
+  boichard2a:
+    url: https://downloads.sourceforge.net/project/pypedal/pypedal-2.0.0/2.0.3/PyPedal-2.0.3.tar.gz
+    sha256: c2f66af3f858279f06cb72da11c8620311abca405fc5292bdc782ee12de2362a
+    member: PyPedal-2.0.3/PyPedal/tests/boichard/boichard2a.ped
+    format: whitespace_table
+    names: [animal, sire, dam, gen]
+    columns: {id: animal, mother: dam, father: sire}
+    missing_parent: ["0"]
+  boichard2b:
+    url: https://downloads.sourceforge.net/project/pypedal/pypedal-2.0.0/2.0.3/PyPedal-2.0.3.tar.gz
+    sha256: c2f66af3f858279f06cb72da11c8620311abca405fc5292bdc782ee12de2362a
+    member: PyPedal-2.0.3/PyPedal/tests/boichard/boichard2b.ped
+    format: whitespace_table
+    names: [animal, sire, dam, gen]
+    columns: {id: animal, mother: dam, father: sire}
+    missing_parent: ["0"]
+
+  ancien_regime:
+    # Kinsources dataset 53 (CC BY-NC-ND 3.0), IUR text export; statistics on the dataset page are Puck's.
+    url: https://www.kinsources.net/kidarep/download_dataset_file.xhtml?dataset_id=53&txt=on
+    sha256: 1962c673a7390000ca249eafbac16e762c561d57f34eb18e6ce04240885430f0
+    format: iur_txt
+    columns: {id: Id, mother: MotherId, father: FatherId, sex: Gender}
+    missing_parent: ["0"]
+    sex_map: {H: 1, F: 2}
+
+  soay_ped1:
+    # Bérénos et al. 2014, Dryad 10.5061/dryad.367s2 (CC0), pedigree1dryad.txt: Pedigree 1
+    # (field maternities, microsatellite paternities, cohorts 1985-2009). Tab-separated ID, MUMID,
+    # FATHER; NA = unknown; no sex column. The deposit README asks users to contact the project.
+    dryad_file: 100179
+    sha256: fc9fb965b91c76fd727225a4c2d280e781b6969812ed533f822957f4d3414716
+    format: whitespace_table
+    columns: {id: ID, mother: MUMID, father: FATHER}
+    missing_parent: []
+    reference_values:
+      asreml:  # inversepedigree1.RData: ASReml-R asreml.Ainverse of this pedigree
+        dryad_file: 100169
+        sha256: b0685f7d302838f2e7940dde739087be98af7d7f7e6eef24a5b187032a21079b
+        format: ainv_rdata
+        object: inversepedigree1
+  soay_ped2:
+    # As soay_ped1, pedigree2dryad.txt: Pedigree 2 (SNP parentage, cohorts 1980-2012).
+    dryad_file: 100161
+    sha256: 463ac8e7c18ceca8b88f1718a83b515b4319ffc5b7e220fabe65718082a5ce8d
+    format: whitespace_table
+    columns: {id: ID, mother: MUMID, father: FATHER}
+    missing_parent: []
+    reference_values:
+      asreml:  # inversepedigree2.RData: ASReml-R asreml.Ainverse of this pedigree
+        dryad_file: 100170
+        sha256: 0150693518f720605078a57208c5c5672d6fd8a263f06cad2fd2a551ebef629e
+        format: ainv_rdata
+        object: inversepedigree2
+  helgeland:
+    # Niskanen et al. 2020, Dryad 10.5061/dryad.m0cfxpp10 (CC0), pedigree.txt: the Sequoia SNP
+    # pedigree, space-separated id, dam, sire; NA = unknown. 440 rows are Sequoia dummy parents
+    # (ids F0001.., M0001..); they are kept here, as the published count of 1,241 needs them.
+    dryad_file: 1952530
+    sha256: 487ba704cb51a08e6c7ffc00a4e660370a231743705aa754274853d0f635c180
+    format: whitespace_table
+    columns: {id: id, mother: dam, father: sire}
+    missing_parent: []
+    reference_values:
+      genotyped:  # Data.txt: the 3,116 genotyped birds of the study. FROH is read only because
+        # every genotyped bird has one; the checks count these birds, not compare FROH with F.
+        dryad_file: 1952544
+        sha256: 0f066059f8abd26b1c09d2338d9e1bfcdf7bfd6639b15dbb7b0bc2e7d589a13a
+        format: whitespace_table
+        id_column: id
+        value_column: FROH
+  sosp_fitness:
+    # Wolak et al. 2018, Dryad 10.5061/dryad.p7p1jb3 (CC0), Wolak_et_al_SOSP_fitness_QG.zip. The
+    # deposit has no parent table: the pedigree is recovered from the fitness analysis's
+    # A-inverse (lower-triangle list) by peeling Henderson's rules; it is exact (no residual) and
+    # gives 3,062 birds, 52 without parents. Dam and sire are not identified; F does not depend on which is which.
+    dryad_file: 29887
+    sha256: 61557dd9346ca8344d257a0ae664c6b84d95d23380f07b364c4e164d104a9c02
+    member: Wolak_et_al_fitness_listAinv.txt
+    format: ainv_list
+    columns: {id: id, mother: mother, father: father}
+    missing_parent: []
+    reference_values:
+      f_coeff:  # the authors' f for the 2,821 fitness-phenotyped birds
+        dryad_file: 29887
+        sha256: 61557dd9346ca8344d257a0ae664c6b84d95d23380f07b364c4e164d104a9c02
+        member: Wolak_et_al_fitness_Data.txt
+        format: whitespace_table
+        id_column: id
+        value_column: f_coeff
+      ainv:  # F = diag(A) - 1 from the same A-inverse
+        dryad_file: 29887
+        sha256: 61557dd9346ca8344d257a0ae664c6b84d95d23380f07b364c4e164d104a9c02
+        member: Wolak_et_al_fitness_listAinv.txt
+        format: ainv_list
+
+  black_robin:
+    # Dryad 10.5061/dryad.16g74 (CC0), DatasheetC of Kennedy et al. 2014: the full pedigree from
+    # the 1979-82 single-pair bottleneck, with each bird's F (IndividualF). The Weiser et al. 2016
+    # deposit (10.5061/dryad.81tg6, DatasetS1) holds 1104 of these birds without the 33 parents of
+    # its first cohorts; its F column equals IndividualF for all 1104.
+    dryad_file: 44580
+    sha256: 40ed89440e262e809a90d717449ccc01b7ebf6f790426d878355e0243cd9cdae
+    format: csv
+    columns: {id: IndividualID, mother: DamID, father: SireID}
+    missing_parent: []  # R NA
+    # No sex column: validate sexes each parent from its role, but 2 birds are used as both mother
+    # and father (sex_role_ambiguity), which blocks without the flag.
+    allow_missing_sex: true
+    reference_values:
+      kennedy_F: {column: IndividualF}
+      weiser_F: {dryad_file: 39818, sha256: 1e14f96ea94aff5a73426670e03854ff01ee7f9e35e8fe0c4cf6bace1811f49e, format: csv, id_column: individual, value_column: F}
+  scrub_jay:
+    # Dryad 10.5061/dryad.z612jm6j0 (CC0), cr_ped_20240602.tsv: the M4 Core Region pedigree of
+    # Linderoth et al. 2025. 17 parents of translocated birds have no row; validate adds them.
+    # The authors' F is the diagonal of their nadiv makeA matrix (cr_ped_20230512_relatedness_matrix.txt).
+    dryad_file: 3900205
+    sha256: d398de81e2d3a92dabbc801f819e5ed1d0b83dea1ce1f6646529a6c3f759bd4a
+    format: whitespace_table
+    columns: {id: ID, mother: DAM_ID, father: SIRE_ID, sex: SEX}
+    missing_parent: ["*"]
+    sex_map: {MALE: 1, FEMALE: 2}
+    reference_values:
+      makeA_F: {dryad_file: 3900192, sha256: 7e8080c0aadc9281810320a49900f0cef09eabb79ad1b4767e47822e9c3f4891, format: square_matrix_diagonal, subtract: 1}
+  seychelles_warbler:
+    # Dryad 10.5061/dryad.vt4b8gtr1 (CC0), Telo_h2_Pruned_Pedigree_2020.csv: the pedantics-pruned
+    # pedigree of Sparks et al. 2022 (id, mum, dad; NA = unknown; no sex column).
+    dryad_file: 2034030
+    sha256: 9a7c60c237b9351ca70d6def8d36b379abaac3884597b5ffe74f60dcba82de97
+    format: csv
+    columns: {id: id, mother: mum, father: dad}
+    missing_parent: []  # R NA
+  arctic_fox:
+    # Dryad 10.5061/dryad.6g8t8 (CC0), "Submitted to Dryad.xlsx" (sheet Blad1) of Noren et al. 2016:
+    # ID, Sex (m/f/NA), F, Sire, Dam, 0 = unknown. Sires Male1-Male4 and "1" have no row.
+    dryad_file: 52765
+    sha256: 746fb379481251b58b16adf0b1b56fa61252e527e8404a78b9616f6f1e7ef75c
+    format: xlsx
+    columns: {id: ID, mother: Dam, father: Sire, sex: Sex}
+    missing_parent: ["0"]
+    sex_map: {m: 1, f: 2}
+    # Fox5, an adult with no birth year or litter, lists Male1 x Fox5 (her own litter's parents):
+    # an individual as its own dam, which summarize refuses. Treated as a founder.
+    parent_overrides: {Fox5: {mother: null, father: null}}
+    reference_values:
+      authors_F: {column: F}
+  # Pyrenean brown bear (Auclair et al. 2025, Dryad 10.5061/dryad.w9ghx3g1s) is not included: the
+  # deposit has no pedigree, only per-trait tables (mother per bear, father per litter) whose F
+  # includes microsatellite-corrected founder relatedness and is rounded to 4 decimals.
+
+  steelhead:
+    # Dryad 10.5061/dryad.bn249 (CC0), MEC-12-0879_DRYAD_phenotype_data.csv: one row per
+    # returning adult (6,173), with Dam/Sire from parentage analysis. Missing parent is
+    # blank (both unknown) or NA (one unknown). 4 sires (A01106, A01107, A01108, A01114)
+    # have no row; validate adds them as founders. 6 fish with blank Sex are not parents.
+    # Not checkable from this deposit (no generation column; deepest fish at depth 3):
+    #   Ne~ = 107.9 from F0 to F2, and 15.7% of F4 with Δf > 0 (Naish et al. 2013 abstract).
+    dryad_file: 20329
+    sha256: aa40eff1c69a1795b9aa2d63a847a74259be53aba0fae42ce12ce5f220738c2e
+    format: csv
+    columns: {id: Fishname, mother: Dam, father: Sire, sex: Sex}
+    missing_parent: [""]
+    sex_map: {Male: 1, Female: 2}
+  peromyscus:
+    # Dryad 10.5061/dryad.8q153 (CC0), pedigree.txt: tab-separated, CR line endings,
+    # columns ID SEX F TREATMENT GEN DAM SIRE GNAW FLIP; 0 = unknown parent. F is the
+    # authors' inbreeding coefficient to 4 decimals (one wild-caught founder has "x").
+    dryad_file: 21285
+    sha256: eca2fcd6f1ba7c0133b5601d16181ba4a58976d7f1ace4e612643d289a03a2cc
+    format: tsv
+    columns: {id: ID, mother: DAM, father: SIRE, sex: SEX}
+    missing_parent: ["0"]
+    sex_map: {m: 1, f: 2}
+    reference_values:
+      authors_F: {column: F}
+      authors_gen: {column: GEN}
+  red_squirrel:
+    # Dryad 10.5061/dryad.b064t9c5 (CC0), pedigree.csv: ID, SIRE.ID, DAM.ID, Sex (M/F), BYEAR;
+    # NA = unknown parent. No pedigree statistics found for it (Taylor et al. 2012 full text
+    # not reachable; the abstract and README give none).
+    dryad_file: 31657
+    sha256: f05d9b3b81c70746db56b1a0f4ec8e934bfcd0742ce22cc4d6b116ec1adbdfef
+    format: csv
+    columns: {id: ID, mother: DAM.ID, father: SIRE.ID, sex: Sex}
+    missing_parent: []
+    sex_map: {M: 1, F: 2}
+

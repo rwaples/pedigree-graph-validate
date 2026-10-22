@@ -1,0 +1,240 @@
+# The cases pedigree-graph is checked on, the oracles, and the caps.
+#
+# Case keys:
+#   id        unique; names the case in results
+#   input     {file, sha256}: a committed inputs/*.tsv.gz from make_inputs.py
+#             (the harness refuses a file whose sha256 differs), or
+#             {bundled: <package>::<dataset>}: a pedigree shipped in an R package, or
+#             {dataset: <name>}: a public pedigree pinned in datasets.yaml (downloaded
+#             into .cache/; Dryad files need credentials, see dryad.py)
+#   families  which checks run: kinship (pairwise kinship and F),
+#             classification (closest category, counts, burden vs verbalisr),
+#             ne (the `ne` list below, against purgeR)
+#   ne        Ne and lineage checks: {stat, reference, published?, source?, gap?}
+#             stat: ne_idf_t1 (pg ne_individual_delta_f.ne_unrelated_founders vs
+#             purgeR pop_Ne, which divides by t - 1), fe (pg
+#             ne_long_term_contributions.n_effective_founders vs purgeR pop_Nfe),
+#             fa, Ng; reference: target (the dataset's target column), all, or
+#             final_cohort (pg's final cohort); gap: an id when pg has no such
+#             estimator. A published value is an INFO row (ADR 0001).
+#   expect    declared non-PASS rows: {family, reference, check?, status: diff, id};
+#             each id has an entry in differences.md. A declared DIFF that
+#             matches is a FAIL, so the declaration is revisited.
+#
+# Oracle keys (kinship_oracles):
+#   script            the R script, run from the repo root
+#   pairs             which pair set its kinship is compared on: pairs (dense
+#                     oracles) or probands (GENLIB); absent = no kinship
+#   F                 also compare its inbreeding coefficients
+#   conversion        an id from conversions.py, applied to its kinship
+#   dense             it builds an N x N matrix, so the dense cap applies
+#   complete_parents  it refuses one-parent rows; phantom parents are filled in
+#   mz                it takes MZ twins (otherwise a twin case is GAP G1)
+#   role_sex          it refuses a parent whose recorded sex is not its role's;
+#                     every oracle reads parents with their role's sex, and a
+#                     case where an id is both a mother and a father is SKIP
+
+seed: 20261021
+
+# Measured 2026-10-22 on a loaded host: 42 min wall, 11.3 GB cgroup peak for the
+# full run (target about 45 min and 12 GB). Revisiting the caps: issue #1.
+budget:
+  dense_max_n: 12000          # N x N float64 is 1.15 GB at 12,000
+  all_pairs_max_n: 1500       # every pair i <= j up to here
+  sample_pairs: 100000        # above it: uniform pairs ...
+  related_pairs: 100000       # ... plus pairs pedigree-graph classifies to degree 5
+  genlib_max_probands: 500    # GENLIB: every pair among this many sampled probands
+  classify_all_pairs_max_n: 300   # verbalisr: every pair i < j up to here
+  classify_sample_pairs: 1000     # above it: half stratified by pg category, half uniform
+  timeout_s: 300              # per oracle call
+  mem_gb: 6                   # per oracle call (address-space limit)
+  workers: 4                  # oracle calls of one case at once
+
+tolerances:
+  # pedigree-graph kinship is a pinned float32 recurrence (its ADR 0009); the
+  # oracles are float64. 1e-6 is several float32 ulps at values <= 1.
+  kinship: 1.0e-6
+  # inbreeding() is the float64 Meuwissen-Luo walk (its ADR 0008).
+  F: 1.0e-10
+  # Ne_iDF is float64 F and equivalent generations on both sides.
+  ne_relative: 1.0e-8
+  # pg's long-term contributions are float32 (UNVERIFIED: inferred from 34.70924977402832 on wf_300).
+  fe_relative: 1.0e-6
+
+# pg Ne estimators with no oracle (one GAP row each). The visPedigree readings
+# are Codex's (pedanalysis.R), UNVERIFIED by a rerun.
+ne_gaps:
+  ne_individual_delta_f.ne: purgeR pop_Ne divides by t - 1 only; checked through ne_unrelated_founders instead
+  ne_inbreeding: no cohort log-regression of mean F in purgeR 1.8.3 or visPedigree 1.10.1
+  ne_coancestry: visPedigree pedne(method = "coancestry") averages pairwise rates over ECG, a different estimator
+  ne_variance_family_size: no family-size-variance Ne in either package
+  ne_sex_ratio: visPedigree pedne(method = "demographic") counts contributing parents, pg counts cohort members
+  ne_hill_overlapping: no overlapping-generations Hill Ne in either package
+  ne_group_coancestry: visPedigree pediv() MeanCoan is the cohort moment only, not pg's regression Ne
+
+kinship_oracles:
+  kinship2: {script: oracles/kinship2.R, pairs: pairs, F: true, dense: true, mz: true}
+  ribd: {script: oracles/ribd.R, pairs: pairs, F: true, dense: true, complete_parents: true, role_sex: true}
+  GENLIB: {script: oracles/genlib.R, pairs: probands, F: true, role_sex: true}
+  nadiv: {script: oracles/nadiv.R, pairs: pairs, F: true, dense: true, conversion: A2PHI}
+  pedigreeTools: {script: oracles/pedigreetools.R, pairs: pairs, F: true, dense: true, conversion: A2PHI}
+  AGHmatrix: {script: oracles/aghmatrix.R, pairs: pairs, F: true, dense: true, conversion: A2PHI}
+  purgeR: {script: oracles/purger_f.R, F: true}
+
+cases:
+  - id: double_first_cousins
+    input: {file: inputs/double_first_cousins.tsv.gz, sha256: de0329e00e21886e6a9d9be73f87a687f15072f1352d2336b8308ada8729cd3d}
+    families: [kinship, classification]
+  - id: conventions
+    input: {file: inputs/conventions.tsv.gz, sha256: 205d948a081972bbed910058c814b57f51bc7de984467df7c6880fca388e3a48}
+    families: [kinship, classification]
+  - id: mz_family
+    input: {file: inputs/mz_family.tsv.gz, sha256: 039fecb4ae3758c42c317f184f4d07476f81f7562a9e8134ae2c9a2cfb4cbb50}
+    families: [kinship, classification]
+  - id: deep_chain
+    input: {file: inputs/deep_chain.tsv.gz, sha256: e713a4ac987bc5c66c560149d6b83036e17d34d4ef5c3db9df463815802bbbed}
+    families: [kinship, classification, ne]
+    ne:
+      - {stat: ne_idf_t1, reference: final_cohort}
+      - {stat: fe, reference: final_cohort}
+  - id: wf_300
+    input: {file: inputs/wf_300.tsv.gz, sha256: 3febc6c8d996974eda0b8febb2a3c5a2de34f3f81b51b05ed444f7df2e78ee87}
+    families: [kinship, classification, ne]
+    ne:
+      - {stat: ne_idf_t1, reference: final_cohort}
+      - {stat: fe, reference: final_cohort}
+  - id: deep_wf
+    input: {file: inputs/deep_wf.tsv.gz, sha256: 83310da07f7d45d02ad25d6622003d5bbe57c7a624a8a89f65788bb1b77e28e1}
+    families: [kinship, classification, ne]
+    ne:
+      - {stat: ne_idf_t1, reference: final_cohort}
+      - {stat: fe, reference: final_cohort}
+  - id: wf_10k
+    input: {file: inputs/wf_10k.tsv.gz, sha256: c29fe157797386f3f787386449a9108294220caa09753d1669b4973464c9b3e7}
+    families: [kinship, classification, ne]
+    ne:
+      - {stat: ne_idf_t1, reference: final_cohort}
+      - {stat: fe, reference: final_cohort}
+  - id: atlas
+    input: {bundled: purgeR::atlas}
+    families: [kinship, classification, ne]
+    expect:
+      - {family: ne, reference: purgeR, check: "ne_idf_t1, reference = all", status: diff, id: D2}
+    ne:
+      - {stat: ne_idf_t1, reference: final_cohort}
+      - {stat: fe, reference: final_cohort}
+      - {stat: ne_idf_t1, reference: target, published: 14.01041, source: "purgeR test_population_parameters.R:74; Heredity 2021 abstract (14)"}
+      - {stat: ne_idf_t1, reference: all, published: 8.184803, source: "purgeR test_population_parameters.R:67"}
+      - {stat: fe, reference: target, gap: B1, published: 3.583086, source: "purgeR test_population_parameters.R:20"}
+      - {stat: fa, reference: target, gap: B2, published: 3.583086, source: "purgeR test_population_parameters.R:21"}
+  - id: dama
+    input: {bundled: purgeR::dama}
+    families: [kinship, classification, ne]
+    ne:
+      - {stat: ne_idf_t1, reference: final_cohort}
+      - {stat: fe, reference: final_cohort}
+      - {stat: ne_idf_t1, reference: target, published: 11.09927, source: "purgeR vignette; Heredity 2021 abstract (11)"}
+      - {stat: fe, reference: target, gap: B1, published: 2.614750, source: "purgeR tutorial vignette, pop_Nancestors table"}
+  - id: arrui
+    input: {bundled: purgeR::arrui}
+    families: [kinship, classification, ne]
+    ne:
+      - {stat: ne_idf_t1, reference: final_cohort}
+      - {stat: fe, reference: final_cohort}
+      - {stat: ne_idf_t1, reference: target, published: 3.83865, source: "purgeR vignette; Heredity 2021 abstract (4)"}
+      - {stat: fe, reference: target, gap: B1, published: 1.769424, source: "purgeR tutorial vignette, pop_Nancestors table"}
+  - id: dorcas
+    input: {bundled: purgeR::dorcas}
+    families: [kinship, classification, ne]
+    ne:
+      - {stat: ne_idf_t1, reference: final_cohort}
+      - {stat: fe, reference: final_cohort}
+      - {stat: ne_idf_t1, reference: target, published: 39.32125, source: "purgeR vignette; Heredity 2021 abstract (39)"}
+      - {stat: fe, reference: target, gap: B1, published: 13.38647, source: "purgeR test_population_parameters.R:29"}
+      - {stat: fa, reference: target, gap: B2, published: 12.9906, source: "purgeR test_population_parameters.R:30"}
+  - id: deep_ped
+    input: {bundled: visPedigree::deep_ped}
+    families: [kinship, classification, ne]
+    ne:
+      - {stat: ne_idf_t1, reference: final_cohort}
+      - {stat: fe, reference: final_cohort}
+      - {stat: fe, reference: "Gen >= max-1", gap: B1, published: 64.73344, source: "visPedigree vignette, pediv summary"}
+      - {stat: fa, reference: "Gen >= max-1", gap: B2, published: 44.12033, source: "visPedigree vignette, pediv summary"}
+
+  # ---------------------------------------------------------------- public pedigrees (datasets.yaml)
+  - id: darwin
+    input: {dataset: darwin}
+    families: [kinship, classification]
+  - id: genea140
+    input: {dataset: genea140}
+    families: [kinship, classification]
+  - id: mrode2
+    input: {dataset: mrode2}
+    families: [kinship, classification]
+  - id: btped
+    input: {dataset: btped}
+    families: [kinship, classification]
+  - id: red_deer
+    input: {dataset: red_deer}
+    families: [kinship, classification]
+  - id: boichard2
+    input: {dataset: boichard2}
+    families: [kinship, classification, ne]
+    ne:
+      - {stat: fe, reference: generation 3, gap: B1, published: 5.6, source: "Boichard et al. 1997 table II (p. 12); PyPedal pyp_tests.py:121"}
+      - {stat: fa, reference: generation 3, gap: B2, published: 2.94, source: "Boichard et al. 1997 table II (p. 12); PyPedal pyp_tests.py:166"}
+      - {stat: Ng, reference: generation 3, gap: B3, published: 2.5, source: "Boichard et al. 1997 table II (p. 12)"}
+  - id: boichard2a
+    input: {dataset: boichard2a}
+    families: [kinship, classification, ne]
+    ne:
+      - {stat: fe, reference: generation 3, gap: B1, published: 4.0, source: "Boichard et al. 1997 table II (p. 12); PyPedal pyp_tests.py:91"}
+      - {stat: fa, reference: generation 3, gap: B2, published: 2.0, source: "Boichard et al. 1997 table II (p. 12); PyPedal pyp_tests.py:136"}
+      - {stat: Ng, reference: generation 3, gap: B3, published: 1.8, source: "Boichard et al. 1997 table II (p. 12)"}
+  - id: boichard2b
+    input: {dataset: boichard2b}
+    families: [kinship, classification, ne]
+    ne:
+      - {stat: fe, reference: generation 3, gap: B1, published: 2.0, source: "Boichard et al. 1997 table II (p. 12); PyPedal pyp_tests.py:106"}
+      - {stat: fa, reference: generation 3, gap: B2, published: 2.0, source: "Boichard et al. 1997 table II (p. 12); PyPedal pyp_tests.py:151"}
+      - {stat: Ng, reference: generation 3, gap: B3, published: 1.1, source: "Boichard et al. 1997 table II (p. 12)"}
+  - id: ancien_regime
+    input: {dataset: ancien_regime}
+    families: [kinship, classification]
+  - id: soay_ped1
+    input: {dataset: soay_ped1}
+    families: [kinship, classification]
+  - id: soay_ped2
+    input: {dataset: soay_ped2}
+    families: [kinship, classification]
+  - id: helgeland
+    input: {dataset: helgeland}
+    families: [kinship, classification]
+  - id: sosp_fitness
+    input: {dataset: sosp_fitness}
+    families: [kinship, classification]
+  - id: black_robin
+    input: {dataset: black_robin}
+    families: [kinship, classification]
+  - id: scrub_jay
+    input: {dataset: scrub_jay}
+    families: [kinship, classification, ne]
+    ne:
+      - {stat: "share of founder ancestry from RLS-K + WSA-K", reference: 2017 population, gap: B1, published: 0.32, source: "Linderoth et al. 2025, Results; Dryad T_IE_20230512_2017_pop_contribution.pedstat1 gives 0.3223"}
+      - {stat: "mean share from RLS-K + WSA-K", reference: 2008-2022, gap: B1, published: 0.24, source: "Linderoth et al. 2025, Results; the deposited pedstat1 files give 0.2379 (SD 0.0645)"}
+      - {stat: founders contributing, reference: 2022 cohort, gap: B1, published: 24, source: "Linderoth et al. 2025, Dryad number_contributing_lineages_to_cohorts_cr_ped_20230512.tsv"}
+  - id: seychelles_warbler
+    input: {dataset: seychelles_warbler}
+    families: [kinship, classification]
+  - id: arctic_fox
+    input: {dataset: arctic_fox}
+    families: [kinship, classification]
+  - id: steelhead
+    input: {dataset: steelhead}
+    families: [kinship, classification]
+  - id: peromyscus
+    input: {dataset: peromyscus}
+    families: [kinship, classification]
+  - id: red_squirrel
+    input: {dataset: red_squirrel}
+    families: [kinship, classification]

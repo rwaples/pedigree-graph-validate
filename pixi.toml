@@ -50,6 +50,8 @@ r-slam = "*"
 
 [pypi-dependencies]
 pedigree-graph = "==0.13.0"
+rdata = "*"     # public pedigrees stored as .rda (datasets.py)
+openpyxl = "*"  # public pedigrees stored as .xlsx (datasets.py)
 
 [activation.env]
 R_LIBS_USER = "$PIXI_PROJECT_ROOT/.r-lib"
@@ -58,4 +60,7 @@ R_LIBS_USER = "$PIXI_PROJECT_ROOT/.r-lib"
 r-setup = { cmd = "python run_oracles.py --install-r", description = "Install the pinned pedigreegraph tarball and the oracles.lock tarballs into .r-lib/" }
 preflight = { cmd = "python run_oracles.py --preflight", depends-on = ["r-setup"], description = "Check both bindings report the pin and every oracle loads" }
 lock-oracles = { cmd = "python tools/lock_oracles.py", description = "Re-resolve oracles.lock from CRAN (review the diff)" }
+harness = { cmd = "python run_oracles.py", depends-on = ["r-setup"], description = "Run every case and write results/" }
+make-inputs = { cmd = "python make_inputs.py", description = "Regenerate inputs/*.tsv.gz" }
+verify-inputs = { cmd = "python make_inputs.py --verify", description = "Regenerate inputs into a temp dir and compare sha256 with cases.yaml" }
 lint = { cmd = "ruff check && ruff format --check", description = "Lint and format check" }
