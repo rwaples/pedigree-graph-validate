@@ -3,8 +3,8 @@
 Runs both bindings of [pedigree-graph](https://github.com/rwaples/pedigree-graph)
 (the Python wheel and the `pedigreegraph` R package) and compares each result
 with the same method in other software (an *oracle*), rerun live on the same
-pedigree: kinship2, ribd, verbalisr, GENLIB, nadiv, pedigreeTools, AGHmatrix,
-purgeR and visPedigree.
+pedigree: kinship2, ribd, verbalisr, GENLIB, nadiv, pedigreeTools, AGHmatrix
+and purgeR. visPedigree supplies a dataset (`deep_ped`) and published values.
 
 The latest results are in [`results/results.md`](results/results.md); every
 row that is not PASS is explained in [`differences.md`](differences.md), and
