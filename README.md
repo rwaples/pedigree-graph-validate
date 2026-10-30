@@ -23,7 +23,7 @@ pixi run verify-inputs
 pixi run lint
 ```
 
-`r-setup` installs the pedigreegraph v0.13.0 source tarball
+`r-setup` installs the pedigreegraph v0.14.0 source tarball
 ([`pedigreegraph.pin`](pedigreegraph.pin)) and the CRAN-only oracles
 ([`oracles.lock`](oracles.lock)), and refuses any tarball whose sha256
 differs. kinship2 and GENLIB come from conda-forge. `pixi run lock-oracles`

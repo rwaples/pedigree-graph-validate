@@ -1,5 +1,5 @@
-# The pedigreegraph R source tarball of the v0.13.0 release, the R half of the
-# release pair (the Python half is pixi.toml's pedigree-graph==0.13.0).
-version: 0.13.0
-url: https://github.com/rwaples/pedigree-graph/releases/download/v0.13.0/pedigreegraph_0.13.0.tar.gz
-sha256: c454b0c69bd56ddb475692e2e7374aaab1275578308aa382fe5fee91b8e79903
+# The pedigreegraph R source tarball of the v0.14.0 release, the R half of the
+# release pair (the Python half is pixi.toml's pedigree-graph==0.14.0).
+version: 0.14.0
+url: https://github.com/rwaples/pedigree-graph/releases/download/v0.14.0/pedigreegraph_0.14.0.tar.gz
+sha256: 1fca96f9860b2d0cac275979f7dfad1e6eb4889d9141942808cfcacc73f06ff8
