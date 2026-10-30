@@ -62,23 +62,18 @@ def path_categories(paths: list[list[int]], sex: dict[int, int] | list[int], rul
     grouped by (up, down), and the group is the full or the half category by
     `rule`:
 
-    - "engine": pedigree-graph's definitions as its ADR 0010 states them
-      ("Categories are the 0.7.1 definitions"). Sibs and avuncular pairs are
-      full when the connecting ancestors are a mated pair (verbalisr's `full`:
-      the two first-step children share both parents); first cousins are full
-      with at least two *distinct* shared grandparents; the removed cousins
-      and second cousins are full with at least two *paths*, and the removed
-      cousins count each orientation (which member is the junior cousin) on
-      its own (engine.rs `removed_cousins`: both products thresholded, then
-      united).
-    - "mated_pair": its GLOSSARY ("Relationship category"): full exactly when
+    - "engine": pedigree-graph's definitions as its ADR 0018 states them. A
+      verbalisr path through a mated pair is two paths, one through a single
+      ancestor is one, and the paths of both orientations of a pair (which
+      member is the niece, or the junior cousin) are summed; the group is full
+      with at least two and half with one. Sibs keep their rule: full when the
+      two share both parents.
+    - "mated_pair": the genealogical rule verbalisr follows: full exactly when
       the connecting ancestors are a mated pair, for every category (D1).
     """
     groups: dict[tuple[int, int], list[tuple[bool, list[int]]]] = {}
-    oriented: dict[tuple[int, int], int] = {}
     found: set[str] = set()
     for l1, l2, full, *ancestors in paths:
-        oriented[(l1, l2)] = oriented.get((l1, l2), 0) + len(ancestors)
         up, down = max(l1, l2), min(l1, l2)
         if down == 0:
             if up == 1:
@@ -91,7 +86,7 @@ def path_categories(paths: list[list[int]], sex: dict[int, int] | list[int], rul
         if key not in _COLLATERAL:
             continue
         full_code, half_code = _COLLATERAL[key]
-        if rule == "mated_pair" or key[1] == 1:
+        if rule == "mated_pair" or key == (1, 1):
             if any(full for full, _ in group):
                 found.add(full_code)
             if not all(full for full, _ in group):
@@ -100,15 +95,10 @@ def path_categories(paths: list[list[int]], sex: dict[int, int] | list[int], rul
                 elif half_code is not None:
                     found.add(half_code)
             continue
-        if key == (2, 2):
-            counts = [len({a for _, anc in group for a in anc})]
-        elif key[0] == key[1]:
-            counts = [sum(len(anc) for _, anc in group)]
-        else:
-            counts = [oriented.get(key, 0), oriented.get(key[::-1], 0)]
-        if any(c >= 2 for c in counts):
+        count = sum(len(anc) for _, anc in group)
+        if count >= 2:
             found.add(full_code)
-        if half_code is not None and any(c == 1 for c in counts):
+        elif half_code is not None:
             found.add(half_code)
     return found
 
@@ -124,7 +114,7 @@ def verbalisr_first_path(paths: list[list[int]], sex: dict[int, int] | list[int]
 CONVERSIONS["VB"] = Conversion(
     "VB",
     "verbalisr's paths of a pair are mapped to pedigree-graph categories by path_categories() "
-    "under pedigree-graph's ADR 0010 definitions, and the closest one (lowest degree, then "
+    "under pedigree-graph's ADR 0018 definitions, and the closest one (lowest degree, then "
     "registry order) is the reference",
     lambda a: a,
 )

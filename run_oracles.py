@@ -567,7 +567,7 @@ def classification_family(ctx: CaseContext, cfg: dict[str, Any], rng: np.random.
         Row(
             ctx.id,
             "classification",
-            "closest category, GLOSSARY mated-pair rule",
+            "closest category, genealogical mated-pair rule",
             "verbalisr",
             "DIFF" if glossary_splits else "PASS",
             len(first),

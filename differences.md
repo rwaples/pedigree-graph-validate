@@ -4,32 +4,35 @@ Each id is a difference between pedigree-graph and an oracle that the harness
 reports as DIFF instead of FAIL, because the cause is understood. A row stays
 FAIL for any mismatch its rule does not cover.
 
-## D1: the cousin categories are not "full = mated pair"
+## D1: full and half are path counts, not "full = mated pair"
 
-**Rows:** "closest category, GLOSSARY mated-pair rule" (classification,
-against verbalisr). Tracked in pedigree-graph#47.
+**Rows:** "closest category, genealogical mated-pair rule" (classification,
+against verbalisr). Decided in pedigree-graph ADR 0018 (#47, #48): intended.
 
-pedigree-graph's GLOSSARY ("Relationship category") defines a full category as
-one whose connecting ancestors are a mated pair. Its engine follows that for
-the sibs and the avuncular categories only. First cousins are full with at
-least two distinct shared grandparents, the removed cousins and second cousins
-with at least two paths, each orientation of a removed-cousin pair on its own
-(engine.rs `cousins`, `removed_cousins`, `second_cousins`). Its ADR 0010 keeps
-this split on purpose ("Categories are the 0.7.1 definitions").
+pedigree-graph decides full against half by path count for every collateral
+category: full when at least two paths of the category's shape join the
+pair, summed over both orientations, half with one. A sib link is one path
+per shared parent id, so a mated pair of shared ancestors gives two, and so
+do one ancestor reached by two routes and two unmated ancestors. verbalisr,
+like genealogy texts, calls a path full only when it runs through a mated
+pair.
 
-The scored "closest category" rows apply the engine's rules to verbalisr's
-paths (`conversions.py::path_categories`, `rule="engine"`) and agree on every
-pair checked. The D1 row applies the GLOSSARY rule (`rule="mated_pair"`) and
-counts the pairs where the label would change:
+The scored "closest category" rows apply pedigree-graph's rule to verbalisr's
+paths (`conversions.py::path_categories`, `rule="engine"`: a mated-pair path
+counts two, a single-ancestor path one) and agree on every pair checked. The
+D1 row applies the genealogical rule (`rule="mated_pair"`) and counts the
+pairs whose label would change, for example:
 
 - `conventions` 23-24, double half first cousins (shared grandparents 13 and
-  16 are not mates): engine 1C, mated pair H1C.
-- `deep_chain` 20-27, connected only through ancestor 1 by four routes:
-  engine 1C1R, mated pair H1C1R.
+  16 are not mates): pg 1C, mated pair H1C.
+- `deep_chain` 9-17: an aunt joined by two half paths, pg Av, mated pair HAv.
+- `deep_ped` 465-2683: two half great-great-avuncular paths, pg G3Av; the
+  mated-pair half code would be degree 6, which pedigree-graph does not
+  register, so the genealogical label is none.
 
-Kinship is unaffected. In every differing pair on `conventions`,
-`deep_chain` and `atlas` (263 pairs), the engine label's nominal kinship is
-nearer the pair's `pair_kinship` than the mated-pair label's.
+With exactly two paths through represented ancestors, pedigree-graph's label
+carries the pair's kinship as its nominal kinship; the exact value is
+`pair_kinship`, which every oracle here agrees with.
 
 ## D2: Ne_iΔF over all rows, t <= 1
 
