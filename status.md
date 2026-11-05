@@ -9,4 +9,4 @@
 | G2 | pg Ne estimators with no oracle | open | see cases.yaml `ne_gaps` |
 | G3 | Ne checks where pg returns no estimate | accepted | pg's no_estimate_code is in the row |
 | S1 | SKIP: over a Cap (dense N, wall time, memory) | accepted | the caps are `budget` in cases.yaml; the row names the cap it hit |
-| S2 | SKIP: black_robin against ribd, GENLIB and verbalisr | accepted | ids 18 and 19 are each recorded as a mother and as a father, which these oracles refuse; the other oracles check the case |
+| S2 | SKIP: black_robin, one `input`/`build` row | accepted | ids 18 and 19 are each recorded as a mother and as a father. From 0.15.0 pedigree-graph refuses that at construction (`parent_in_both_roles`, pedigree-graph #58), as ribd, GENLIB and verbalisr already did, so no oracle checks the case. cases.yaml names the code as `refuse`; any other refusal is an ERROR row |

@@ -216,6 +216,9 @@ cases:
   - id: black_robin
     input: {dataset: black_robin}
     families: [kinship, classification]
+    # ids 18 and 19 are each recorded as a mother and as a father, which
+    # pedigree-graph refuses at construction from 0.15.0 (pedigree-graph #58).
+    refuse: parent_in_both_roles
   - id: scrub_jay
     input: {dataset: scrub_jay}
     families: [kinship, classification, ne]

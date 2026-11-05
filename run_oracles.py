@@ -33,7 +33,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import yaml
-from pedigree_graph import RELATIONSHIPS, MissingMetadataError
+from pedigree_graph import RELATIONSHIPS, MissingMetadataError, PedigreeValidationError
 from pedigree_graph.effective_size import ne_individual_delta_f, ne_long_term_contributions
 
 from conversions import CONVERSIONS, path_categories, verbalisr_first_path
@@ -806,6 +806,21 @@ def main() -> int:
         except (ValueError, subprocess.CalledProcessError) as err:
             rows.append(Row(case["id"], "input", "load", "", "ERROR", note=str(err)))
             continue
+        # A case whose input pedigree-graph refuses names the refusal's code as
+        # `refuse`; it gets one SKIP row. Any other refusal is an ERROR row, and
+        # the run goes on to the next case either way.
+        refuse = case.get("refuse")
+        try:
+            graph = ped.graph()
+        except PedigreeValidationError as err:
+            status = "SKIP" if err.code == refuse else "ERROR"
+            note = f"pedigree-graph refuses the input ({err.code}): {err}"
+            rows.append(Row(case["id"], "input", "build", "pedigree-graph", status, n=ped.n, note=note))
+            print(f"{case['id']}: N = {ped.n}, refused ({err.code}), {status}", flush=True)
+            continue
+        if refuse:
+            note = f"pedigree-graph built the input; cases.yaml expects it to refuse it ({refuse})"
+            rows.append(Row(case["id"], "input", "build", "pedigree-graph", "FAIL", n=ped.n, note=note))
         try:
             oracle_ped, refused = ped.with_role_sex(), ""
         except ValueError as err:
@@ -813,7 +828,7 @@ def main() -> int:
         ctx = CaseContext(
             case["id"],
             ped,
-            ped.graph(),
+            graph,
             oracle_ped,
             refused,
             work,
